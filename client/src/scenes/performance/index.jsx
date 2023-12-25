@@ -11,6 +11,8 @@ const Performance = () => {
   const userId = useSelector((state) => state.global.userId);
   const { data, isLoading } = useGetUserPerformanceQuery(userId);
 
+  console.log('performance?', data)
+
   const columns = [
     {
       field: "_id",
