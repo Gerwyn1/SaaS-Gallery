@@ -41,7 +41,10 @@ const app = express();
 app.use(cookieSession({
   name: process.env.COOKIE_NAME,
   keys: [process.env.COOKIE_KEY_NEW, process.env.COOKIE_KEY_OLD],
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  secure: process.env.NODE_ENV === 'production', // Set to true in production
+  httpOnly: true,
+  sameSite: 'strict', // or 'lax' or 'none' (requires secure: true)
 }))
 
 app.use(express.json());

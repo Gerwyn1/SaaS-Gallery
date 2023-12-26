@@ -29,7 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 // login user
 const authUser = asyncHandler(async(req, res,next) => {
-  console.log('step 1: login controller')
+  console.log('step 1: login controller');
     await passport.authenticate('local', asyncHandler(async(err,user) => {
       console.log('step 3: passport authentication');
       if (!user) return next(createHttpError(401, err));
