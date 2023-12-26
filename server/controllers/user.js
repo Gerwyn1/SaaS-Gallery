@@ -15,31 +15,33 @@ import UserModel from '../models/User.js';
 // import convertImagePath from "../utils/convertImagePath.js";
 
 
-// auth user & get token (login)
-const authUser = asyncHandler(async (req, res) => {
+
+// register a new user
+const registerUser = asyncHandler(async (req, res) => {
   const {
-    email,
-    password,
-    username
+  email, password, confirmPassword, name
   } = req.body;
-  const existingUser = await UserModel.findOne({
-    username
-  });
-
-  if (!existingUser) throw createHttpError(401, 'Invalid email or password');
-  if (existingUser.is_disabled) throw createHttpError(403, "Your account has been suspended. Please contact support for more information.");
-
-  if (await existingUser.matchPassword(password)) {
-    const token = generateToken(res, existingUser._id);
-
-    res.status(200).json({
-      ...existingUser,
-      token
-    });
-  } else throw createHttpError(401, 'Invalid email or password');
+  await UserModel.checkRegisterFields(email, password, confirmPassword);
+  await UserModel.emailAlreadyExists(email);
+  await UserModel.confirmPassword(password, confirmPassword);
+  await UserModel.validateFields(email, password);
+  const newUser = await UserModel.create({email, password,name});
+ res.status(201).json(newUser);
 });
 
-const authUser2 = asyncHandler(async (req, res,next) => {
+// get user profile
+const getUserProfile = asyncHandler(async (req, res) => {
+  // const user = await UserModel.findById(req.user._id);
+  const user = await UserModel.findById(req.params.userId);
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+const authUser = asyncHandler(async (req, res,next) => {
 console.log('first step of authentication - log in')
 
   passport.authenticate('local', (err,user) => {
@@ -59,10 +61,9 @@ console.log('first step of authentication - log in')
 });
 
 export {
+  registerUser,
   authUser,
-  authUser2,
   // getAllUsers,
-  // registerUser,
   // logoutUser,
   // deleteUser,
   // getUserProfile,

@@ -10,17 +10,21 @@ import * as UserController from "../controllers/user.js";
 const router = express.Router();
 
 // register user
-// router.post('/', imageUpload.fields([
-//   { name: 'profile_image', maxCount: 1 },
-//   { name: 'banner_image', maxCount: 1 },
-// ]),  UserController.registerUser);
+router.post('/', UserController.registerUser);
 
 // login user
-router.post('/auth', UserController.authUser2);
-
+router.post('/auth', UserController.authUser);
 
 // logout user
 // router.post('/logout', protect, UserController.logoutUser);
 
 
 export default router;
+
+
+
+// for image uploads...
+// imageUpload.fields([
+//   { name: 'profile_image', maxCount: 1 },
+//   { name: 'banner_image', maxCount: 1 },
+// ]),

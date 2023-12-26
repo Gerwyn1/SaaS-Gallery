@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import validator from "validator";
+import createHttpError from "http-errors";
+import bcrypt from 'bcryptjs';
 
 const UserSchema = new mongoose.Schema(
   {
@@ -30,7 +33,6 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Password is required.'],
-      min: 5,
     },
     repeatPassword: {
       type: String,
@@ -97,6 +99,43 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// REGISTER STATIC FUNCTIONS
+UserSchema.statics.checkRegisterFields = function(email, password, confirmPassword) {
+  if (!email || !password || !confirmPassword) {
+    throw createHttpError(400, 'Missing required fields');
+  }
+}
+
+UserSchema.statics.emailAlreadyExists = async function(email) {
+    const user = await this.findOne({email});
+    if (user) throw createHttpError(400, 'Email already exists.');
+}
+
+UserSchema.statics.validateFields = async function(email, password) {
+  if (!validator.isEmail(email)) throw createHttpError(400, 'Email already taken.');
+  if (!validator.isStrongPassword(password, {
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+  })) throw createHttpError(400, 'Password strength too weak.');
+}
+
+UserSchema.statics.confirmPassword = async function(password, confirmPassword) { 
+  if (password !== confirmPassword) throw createHttpError(400, 'Confirm password must match.');
+}
+
+// Encrypt password using bcrypt
+UserSchema.pre('save', async function (next) {
+  // if modified or creating pw
+  if (!this.isModified('password')) next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  this.passwordHistory.push(this.password);
+});
+
+// LOGIN
 // Match user entered password to hashed password in database
 // UserSchema.methods.matchPassword = async function (enteredPassword) {
 //   console.log('match password?')
@@ -107,21 +146,6 @@ const UserSchema = new mongoose.Schema(
 // UserSchema.methods.checkPasswordHistory = async function (enteredPassword) {
 //   return await this.passwordHistory.some((prevPassword) => bcrypt.compareSync(enteredPassword, prevPassword));
 // };
-
-// Encrypt password using bcrypt
-// UserSchema.pre('save', async function (next) {
-//   if (!this.isModified('password')) {
-//     next();
-//   }
-
-//   // if modified or creating pw
-//   const salt = await bcrypt.genSalt(10);
-//   this.password = await bcrypt.hash(this.password, salt);
-
-//   // store hashed password in history
-//   this.passwordHistory.push(this.password);
-// });
-
 
 const User = mongoose.model("Customer", UserSchema);
 export default User;

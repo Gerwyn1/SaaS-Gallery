@@ -16,10 +16,8 @@ import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 import userRoutes from './routes/user.js';
 
-import UserModel from "./models/User.js";
-
 // data imports
-import User from "./models/User.js";
+import UserModel from "./models/User.js";
 import Product from "./models/Product.js";
 import ProductStat from "./models/ProductStat.js";
 import Transaction from "./models/Transaction.js";
@@ -33,6 +31,7 @@ import {
   dataOverallStat,
   dataAffiliateStat,
 } from "./data/index.js";
+import {notFound, errorHandler} from './middleware/errorMiddleware.js';
 
 /* CONFIGURATION */
 dotenv.config();
@@ -87,6 +86,9 @@ app.use("/general", generalRoutes);
 app.use("/management", managementRoutes);
 app.use("/sales", salesRoutes);
 app.use('/api/users', userRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;
