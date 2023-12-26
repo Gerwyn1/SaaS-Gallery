@@ -45,7 +45,6 @@ const authUser = asyncHandler(async(req, res,next) => {
 
 // get user profile
 const getUserProfile = asyncHandler(async (req, res) => {
-  if (!req.isAuthenticated()) throw createHttpError(403, 'Access denied.');
   const {userId} = req.params;
   const user = await UserModel.findById(userId);
   if (!user) throw createHttpError(404, 'User not found.')

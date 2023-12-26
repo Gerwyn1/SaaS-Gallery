@@ -1,6 +1,7 @@
 import express from "express";
 
 import * as UserController from "../controllers/user.js";
+import { requireAuth } from "../middleware/authMiddleware.js";
 // import { protect } from '../middleware/authMiddleware.js';
 // import {ROLES_LIST} from "../config/roles_list.js";
 // import {checkUserRole} from "../middleware/authMiddleware.js";
@@ -21,7 +22,7 @@ router.post('/auth', UserController.authUser);
 // get user profile & update user profile
 router
 .route('/profile/:userId')
-.get(UserController.getUserProfile);
+.get(requireAuth, UserController.getUserProfile);
 // .patch(protect, checkUserRole(ROLES_LIST.editor, ROLES_LIST.admin, ROLES_LIST.user), imageUpload.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'banner_image', maxCount: 1 },

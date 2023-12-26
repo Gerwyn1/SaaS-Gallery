@@ -1,6 +1,12 @@
 import jwt from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
 import UserModel from '../models/User.js';
+import createHttpError from "http-errors";
+
+const requireAuth = asyncHandler(async (req, res, next) => {
+  if (!req.isAuthenticated()) next(createHttpError(403, 'Access denied.'));
+  next();
+ });
 
 // const protect = asyncHandler(async (req, res, next) => {
 //   let token;
@@ -62,6 +68,7 @@ import UserModel from '../models/User.js';
 //  }
 
 export {
+  requireAuth
   // protect,
   // checkUserRole,
   // checkIfPasswordExpired
