@@ -14,8 +14,6 @@ import UserModel from '../models/User.js';
 // } from "../models/user.js";
 // import convertImagePath from "../utils/convertImagePath.js";
 
-
-
 // register a new user
 const registerUser = asyncHandler(async (req, res) => {
   const {
@@ -29,6 +27,22 @@ const registerUser = asyncHandler(async (req, res) => {
  res.status(201).json(newUser);
 });
 
+// login user
+const authUser = asyncHandler(async(req, res,next) => {
+  console.log('step 1: login controller')
+    await passport.authenticate('local', asyncHandler(async(err,user) => {
+      console.log('step 3: passport authentication');
+      if (!user) return next(createHttpError(401, err));
+      if (err) return next(createHttpError(401, err));
+      req.logIn(user, (err) => {
+        if (err) return next(err);
+        return res.status(200).json({
+          redirectTo: '/dashboard',
+        });
+      })
+    }))(req,res, next)
+  });
+
 // get user profile
 const getUserProfile = asyncHandler(async (req, res) => {
   // const user = await UserModel.findById(req.user._id);
@@ -41,24 +55,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-const authUser = asyncHandler(async (req, res,next) => {
-console.log('first step of authentication - log in')
 
-  passport.authenticate('local', (err,user) => {
-    console.log('3. passport authentication')
-    if (err) return next(err);
-    if (!user) return res.status(401).json({message: 'Invalid email or password'});
-    req.logIn(user, (err) => {
-      if (err) return next(err);
-      return res.status(200).json({
-        ...user,
-        redirectTo: '/dashboard',
-        // token: generateToken(res, user._id)
-      });
-    })
-  })(req,res, next)
-
-});
 
 export {
   registerUser,

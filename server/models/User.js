@@ -99,7 +99,7 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// REGISTER STATIC FUNCTIONS
+// REGISTER FUNCTIONS:
 UserSchema.statics.checkRegisterFields = function(email, password, confirmPassword) {
   if (!email || !password || !confirmPassword) {
     throw createHttpError(400, 'Missing required fields');
@@ -126,7 +126,7 @@ UserSchema.statics.confirmPassword = async function(password, confirmPassword) {
   if (password !== confirmPassword) throw createHttpError(400, 'Confirm password must match.');
 }
 
-// Encrypt password using bcrypt
+// Encrypt password using bcrypt (upon registration)
 UserSchema.pre('save', async function (next) {
   // if modified or creating pw
   if (!this.isModified('password')) next();
@@ -135,12 +135,12 @@ UserSchema.pre('save', async function (next) {
   this.passwordHistory.push(this.password);
 });
 
-// LOGIN
-// Match user entered password to hashed password in database
-// UserSchema.methods.matchPassword = async function (enteredPassword) {
-//   console.log('match password?')
-//   return await bcrypt.compare(enteredPassword, this.password);
-// };
+// LOGIN FUNCTIONS:
+
+// Match user entered password to hashed password in database (login)
+UserSchema.methods.matchPassword = async function (enteredPassword, userPassword) {
+  return await bcrypt.compare(enteredPassword, userPassword);
+};
 
 // Check if the entered password matches any previous passwords or the current password
 // UserSchema.methods.checkPasswordHistory = async function (enteredPassword) {

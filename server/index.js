@@ -8,7 +8,8 @@ import morgan from "morgan";
 import passport from "passport";
 import { Strategy as LocalStrategy } from 'passport-local'
 import cookieSession from "cookie-session";
-import bcrypt from 'bcryptjs'
+import asyncHandler from "express-async-handler";
+import createHttpError from "http-errors";
 
 import clientRoutes from "./routes/client.js";
 import generalRoutes from "./routes/general.js";
@@ -50,28 +51,27 @@ app.use(passport.session());
 // PASSPORT SERIALIZE USER
 passport.serializeUser((user, done) => {
   console.log(`4: serialize user: ${JSON.stringify(user)}`);
-  return done(null, user.id);
+  return done(null, user._id);
 });
 
-// PASSPORT STRATEGY
-passport.use('local', new LocalStrategy({usernameField: 'email',passReqToCallback : true},
-async (req, email, password, done) => {
-  console.log('2:local strategy verify cb');
-  const user =  await UserModel.findOne({email});
-  console.log(user)
-
-  if (!user) return done(null, false);
-  const result = await new Promise((resolve, reject) => {
-    bcrypt.compare(password, user.password, (err, result) => {
-      if (err) reject(err);
-      resolve(result);
-    })
-  });
-
-  console.log('result->>', result);
-
-  // return done(null, {id: 'test'})
+// PASSPORT DESERIALIZE USER
+passport.deserializeUser(asyncHandler(async (id, done) => {
+  // step 5: deserialize user id
+  const user = await UserModel.findById(id);
+  if (!user) return done(createHttpError(404, 'User not found.'));
+  return done(null, {id: user._id, email: user.email});
 }));
+
+// PASSPORT STRATEGY (login)
+passport.use('local', new LocalStrategy({usernameField: 'email',passReqToCallback : true},
+asyncHandler(async(req, email, password, done) => {
+  console.log('step 2: verification');
+  const user =  await UserModel.findOne({email});
+  if (!user) return done('Invalid Email or Password.', false);
+  const passwordMatch = await user.matchPassword(password, user.password);
+  if (!passwordMatch) return done('Invalid Email or Password.', null);
+  return done(null, user);
+})));
 
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
