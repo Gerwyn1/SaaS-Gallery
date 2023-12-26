@@ -18,6 +18,15 @@ router.post('/auth', UserController.authUser);
 // logout user
 // router.post('/logout', protect, UserController.logoutUser);
 
+// get user profile & update user profile
+router
+.route('/profile/:userId')
+.get(UserController.getUserProfile);
+// .patch(protect, checkUserRole(ROLES_LIST.editor, ROLES_LIST.admin, ROLES_LIST.user), imageUpload.fields([
+//   { name: 'profile_image', maxCount: 1 },
+//   { name: 'banner_image', maxCount: 1 },
+// ]), UserController.updateUserProfile);
+
 
 export default router;
 

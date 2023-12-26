@@ -45,25 +45,20 @@ const authUser = asyncHandler(async(req, res,next) => {
 
 // get user profile
 const getUserProfile = asyncHandler(async (req, res) => {
-  // const user = await UserModel.findById(req.user._id);
-  const user = await UserModel.findById(req.params.userId);
-  if (user) {
-    res.status(200).json(user);
-  } else {
-    res.status(404);
-    throw new Error('User not found');
-  }
+  if (!req.isAuthenticated()) throw createHttpError(403, 'Access denied.');
+  const {userId} = req.params;
+  const user = await UserModel.findById(userId);
+  if (!user) throw createHttpError(404, 'User not found.')
+  res.status(200).json(user);
 });
-
-
 
 export {
   registerUser,
   authUser,
+  getUserProfile,
   // getAllUsers,
   // logoutUser,
   // deleteUser,
-  // getUserProfile,
   // updateUserProfile,
   // disableUser,
   // requestEmailVerificationCode,
