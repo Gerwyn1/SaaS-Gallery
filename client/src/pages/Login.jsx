@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { Button, TextField, Typography, Container } from "@mui/material";
 
-import { setFormData, resetForm, setLoginErrMsg } from "../state/index";
+import { setFormData, resetForm, setLoginErrMsg, setId } from "../state/index";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,11 +15,26 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(process.env.REACT_APP_BASE_URL + "/api/users/auth", {email: formData.email, password: formData.password});
-      if (response.statusText === 'OK') {
-        localStorage.setItem('isAuthenticated', true);
-        navigate('/dashboard');
-        dispatch(setLoginErrMsg(''));
+      const response = await axios.post(
+        process.env.REACT_APP_BASE_URL + "/api/users/auth",
+        { email: formData.email, password: formData.password }
+      );
+      if (response.statusText === "OK") {
+        localStorage.setItem("isAuthenticated", true);
+        navigate("/dashboard");
+        document.cookie = `userId=${response.data.userId}; path=/`;
+
+        // When the application initializes
+        const cookieValue = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("userId="))
+          ?.split("=")[1];
+
+        if (cookieValue && localStorage.getItem('isAuthenticated')) {
+          dispatch(setId(cookieValue));
+        }
+        dispatch(setId(response.data.userId));
+        dispatch(setLoginErrMsg(""));
       }
       dispatch(resetForm());
     } catch (error) {
@@ -28,9 +43,9 @@ const Login = () => {
   };
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (isAuthenticated) navigate('/dashboard');
-  }, [navigate])
+    const isAuthenticated = localStorage.getItem("isAuthenticated");
+    if (isAuthenticated) navigate("/dashboard");
+  }, [navigate]);
 
   return (
     <Container
@@ -70,6 +85,9 @@ const Login = () => {
           {loginErrMsg}
         </Typography>
       )}
+      <Typography variant="body2" sx={{ mt: 2 }}>
+        Already have an account? <Link to="/register">Register</Link>
+      </Typography>
     </Container>
   );
 };

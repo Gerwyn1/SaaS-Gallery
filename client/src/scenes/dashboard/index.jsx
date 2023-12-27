@@ -21,17 +21,27 @@ import OverviewChart from "components/OverviewChart";
 import { useGetDashboardQuery } from "state/api";
 import StatBox from "components/StatBox";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import Cookies from 'js-cookie';
+import { setId } from 'state';
 
 const Dashboard = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
   const { data, isLoading } = useGetDashboardQuery();
+  const { id } = useSelector((state) => state.global);
 
+  console.log("persisted user id: ", id);
+
+  // persist user data
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) navigate('/login');
-  }, [navigate])
+    const userId = Cookies.get('userId');
+    if (userId || isAuthenticated) dispatch(setId(userId));
+    if (!userId || !isAuthenticated) dispatch(setId(null));
+  }, [navigate, dispatch])
 
   const columns = [
     {

@@ -42,12 +42,9 @@ app.use(cookieSession({
   name: process.env.COOKIE_NAME,
   keys: [process.env.COOKIE_KEY_NEW, process.env.COOKIE_KEY_OLD],
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  // secure: process.env.NODE_ENV === 'production', // Set to true in production
-  // httpOnly: true,
-  // sameSite: 'strict', // or 'lax' or 'none' (requires secure: true)
-  httpOnly: false, // This should be false for the client to read the cookie
-  secure: false, // This should be false for non-HTTPS connections
-  sameSite: 'lax', // This can be set to 'lax', 'strict', or 'none'
+  secure: process.env.NODE_ENV === 'production',
+  httpOnly: true,
+  sameSite: 'strict',
 }));
 
 app.use(express.json());
@@ -64,11 +61,9 @@ passport.deserializeUser(asyncHandler(async (id, done) => {
   return done(null, {id: user._id, email: user.email});
 }));
 
-// PASSPORT STRATEGY (LOGIN) (STEP 2)
+// PASSPORT STRATEGY (LOGIN) (STEP 2) - SKIPPED IF FIELDS EMPTY
 passport.use('local', new LocalStrategy({usernameField: 'email',passReqToCallback : true},
 asyncHandler(async(req, email, password, done) => {
-  console.log('hit login')
-  console.log('qwdqw')
   const user =  await UserModel.findOne({email});
   if (!user) return done('Invalid Email or Password.', false);
   const passwordMatch = await user.matchPassword(password, user.password);

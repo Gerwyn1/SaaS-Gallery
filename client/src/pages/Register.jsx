@@ -1,18 +1,15 @@
 import React, { useEffect } from "react";
 import { Button, TextField, Typography, Container } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-
-import { setFormData, resetForm, setRegisterErrMsg } from "../state/index";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+
+import { setFormData, resetForm, setRegisterErrMsg } from "../state/index";
 
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { formData, registerErrMsg } = useSelector((state) => state.global);
-
-  console.log(registerErrMsg)
-
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("isAuthenticated");
     if (isAuthenticated) navigate("/dashboard");
@@ -88,6 +85,9 @@ const Register = () => {
           {registerErrMsg}
         </Typography>
       )}
+      <Typography variant="body2" sx={{ mt: 2 }}>
+        Already have an account? <Link to="/login">Login</Link>
+      </Typography>
     </Container>
   );
 };

@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
   const navigate = useNavigate();
@@ -139,6 +140,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
                       console.log(error)
                     }
                     localStorage.removeItem('isAuthenticated');
+                    Cookies.remove('userId');
                     navigate('/login');
                 }}
               >
