@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LightModeOutlined,
   DarkModeOutlined,
@@ -23,8 +23,8 @@ import {
   MenuItem,
   useTheme,
 } from "@mui/material";
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
   const navigate = useNavigate();
@@ -35,6 +35,11 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
   const isOpen = Boolean(anchorEl);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if (!isAuthenticated) navigate('/login');
+  }, [navigate])
 
   return (
     <AppBar
@@ -123,11 +128,22 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               onClose={handleClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             >
-              <MenuItem onClick={async() => {
-                handleClose();
-                await axios.post(process.env.REACT_APP_BASE_URL + '/api/users/logout');
-                navigate('/login');
-              }}>Log Out</MenuItem>
+              <MenuItem
+                onClick={async () => {
+                  handleClose();
+                  try {
+                    await axios.post(
+                      process.env.REACT_APP_BASE_URL + "/api/users/logout"
+                      );
+                    } catch (error) {
+                      console.log(error)
+                    }
+                    localStorage.removeItem('isAuthenticated');
+                    navigate('/login');
+                }}
+              >
+                Log Out
+              </MenuItem>
             </Menu>
           </FlexBetween>
         </FlexBetween>

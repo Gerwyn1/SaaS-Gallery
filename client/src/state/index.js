@@ -6,7 +6,7 @@ const initialState = {
   formData: {
     email: '',
     password : '',
-    // confirmPassword:'',
+    confirmPassword:'',
   },
   registerErrMsg: '',
   loginErrMsg: '',
@@ -22,6 +22,9 @@ export const globalSlice = createSlice({
     setLoginErrMsg: (state, action) => {
       state.loginErrMsg = action.payload
     },
+    setRegisterErrMsg: (state, action) => {
+      state.registerErrMsg = action.payload
+    },
     setFormData: (state, action) => {
       const { field, value } = action.payload;
       state.formData[field] = value;
@@ -30,12 +33,12 @@ export const globalSlice = createSlice({
       state.formData = {
         email: "",
         password: "",
-        // confirmPassword:'',
+        confirmPassword:'',
       };
     },
   },
 });
 
-export const { setMode, setFormData, resetForm, setLoginErrMsg } = globalSlice.actions;
+export const { setMode, setFormData, resetForm, setLoginErrMsg, setRegisterErrMsg } = globalSlice.actions;
 
 export default globalSlice.reducer;

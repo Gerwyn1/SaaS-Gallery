@@ -1,5 +1,4 @@
-// Login.js
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -18,15 +17,20 @@ const Login = () => {
     try {
       const response = await axios.post(process.env.REACT_APP_BASE_URL + "/api/users/auth", {email: formData.email, password: formData.password});
       if (response.statusText === 'OK') {
-        dispatch(setLoginErrMsg(''));
         localStorage.setItem('isAuthenticated', true);
         navigate('/dashboard');
+        dispatch(setLoginErrMsg(''));
       }
       dispatch(resetForm());
     } catch (error) {
       dispatch(setLoginErrMsg(error.response.data.message));
     }
   };
+
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if (isAuthenticated) navigate('/dashboard');
+  }, [navigate])
 
   return (
     <Container
