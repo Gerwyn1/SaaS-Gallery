@@ -1,10 +1,8 @@
 // import crypto from "crypto";
 import asyncHandler from 'express-async-handler';
-// import bcrypt from 'bcryptjs';
 import createHttpError from "http-errors";
-import passport from 'passport';
-
 import UserModel from '../models/User.js';
+import { passportLogin, clearCookies } from '../passport.js/login.js';
 // import generateToken from '../utils/generateToken.js';
 // import * as Email from "../utils/email.js";
 // import EmailVerificationToken from "../models/emailVerificationToken.js";
@@ -14,8 +12,8 @@ import UserModel from '../models/User.js';
 // } from "../models/user.js";
 // import convertImagePath from "../utils/convertImagePath.js";
 
-// register a new user
-const registerUser = asyncHandler(async (req, res) => {
+// REGISTER (STEP 1)
+const registerUser = asyncHandler(async (req, res, next) => {
   const {
   email, password, confirmPassword, name
   } = req.body;
@@ -23,27 +21,21 @@ const registerUser = asyncHandler(async (req, res) => {
   await UserModel.emailAlreadyExists(email);
   await UserModel.confirmPassword(password, confirmPassword);
   await UserModel.validateFields(email, password);
+
+  // AND LOGIN USER
   const newUser = await UserModel.create({email, password,name});
- res.status(201).json(newUser);
+  req.email = newUser.email;
+  req.password = newUser.password;
+  passportLogin(req, res, next);
 });
 
-// login user
-const authUser = asyncHandler(async(req, res,next) => {
-  console.log('step 1: login controller');
-    await passport.authenticate('local', asyncHandler(async(err,user) => {
-      console.log('step 3: passport authentication');
-      if (!user) return next(createHttpError(401, err));
-      if (err) return next(createHttpError(401, err));
-      req.logIn(user, (err) => {
-        if (err) return next(err);
-        return res.status(200).json({
-          redirectTo: '/dashboard',
-        });
-      })
-    }))(req,res, next)
-  });
+// LOGIN USER (STEP 1)
+const authUser = asyncHandler(async(req, res,next) => passportLogin(req, res, next));
 
-// get user profile
+  // LOGOUT USER
+const logoutUser = async (req, res, next) =>  await clearCookies(res);
+
+// GET USER PROFILE
 const getUserProfile = asyncHandler(async (req, res) => {
   const {userId} = req.params;
   const user = await UserModel.findById(userId);
@@ -54,9 +46,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
 export {
   registerUser,
   authUser,
+  logoutUser,
   getUserProfile,
   // getAllUsers,
-  // logoutUser,
   // deleteUser,
   // updateUserProfile,
   // disableUser,

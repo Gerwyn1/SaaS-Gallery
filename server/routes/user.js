@@ -17,7 +17,7 @@ router.post('/', UserController.registerUser);
 router.post('/auth', UserController.authUser);
 
 // logout user
-// router.post('/logout', protect, UserController.logoutUser);
+router.post('/logout', requireAuth, UserController.logoutUser);
 
 // get user profile & update user profile
 router

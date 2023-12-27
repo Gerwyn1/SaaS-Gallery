@@ -51,24 +51,19 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// PASSPORT SERIALIZE USER
-passport.serializeUser((user, done) => {
-  console.log(`4: serialize user: ${JSON.stringify(user)}`);
-  return done(null, user._id);
-});
+// PASSPORT SERIALIZE USER (STEP 4)
+passport.serializeUser((user, done) => done(null, user._id));
 
-// PASSPORT DESERIALIZE USER
+// PASSPORT DESERIALIZE USER (STEP 5)
 passport.deserializeUser(asyncHandler(async (id, done) => {
-  // step 5: deserialize user id
   const user = await UserModel.findById(id);
   if (!user) return done(createHttpError(404, 'User not found.'));
   return done(null, {id: user._id, email: user.email});
 }));
 
-// PASSPORT STRATEGY (login)
+// PASSPORT STRATEGY (LOGIN) (STEP 2)
 passport.use('local', new LocalStrategy({usernameField: 'email',passReqToCallback : true},
 asyncHandler(async(req, email, password, done) => {
-  console.log('step 2: verification');
   const user =  await UserModel.findOne({email});
   if (!user) return done('Invalid Email or Password.', false);
   const passwordMatch = await user.matchPassword(password, user.password);
