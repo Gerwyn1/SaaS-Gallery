@@ -23,7 +23,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
   await UserModel.validateFields(email, password);
 
   // AND LOGIN USER
-  const newUser = await UserModel.create({email, password,name});
+  const newUser = await UserModel.create({email, password});
   req.email = newUser.email;
   req.password = newUser.password;
   passportLogin(req, res, next);

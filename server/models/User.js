@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
+      // required: true,
       min: 2,
       max: 100,
     },
@@ -101,7 +101,7 @@ const UserSchema = new mongoose.Schema(
 
 // REGISTER FUNCTIONS:
 UserSchema.statics.checkRegisterFields = function(email, password, confirmPassword) {
-  if (!email || !password || !confirmPassword) {
+ if (!email || !password || !confirmPassword) {
     throw createHttpError(400, 'Missing required fields');
   }
 }
