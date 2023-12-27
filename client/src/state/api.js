@@ -13,8 +13,17 @@ export const api = createApi({
     "Admins",
     "Performance",
     "Dashboard",
+    "Login",
   ],
   endpoints: (build) => ({
+    getLogin: build.query({
+      query: (credentials) => ({
+        url: "api/users/auth",
+        method: "POST",
+        data: credentials,
+      }),
+      providesTags: ["Login"],
+    }),
     getUser: build.query({
       query: (id) => `general/user/${id}`,
       providesTags: ["User"],
@@ -59,6 +68,7 @@ export const api = createApi({
 });
 
 export const {
+  useGetLoginQuery,
   useGetUserQuery,
   useGetProductsQuery,
   useGetCustomersQuery,

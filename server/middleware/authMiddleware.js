@@ -4,6 +4,8 @@ import UserModel from '../models/User.js';
 import createHttpError from "http-errors";
 
 const requireAuth = asyncHandler(async (req, res, next) => {
+  console.log(req.isAuthenticated())
+
   if (!req.isAuthenticated()) next(createHttpError(403, 'Access denied.'));
   next();
  });

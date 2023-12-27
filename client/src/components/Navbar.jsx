@@ -23,8 +23,11 @@ import {
   MenuItem,
   useTheme,
 } from "@mui/material";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const theme = useTheme();
 
@@ -62,6 +65,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
 
         {/* RIGHT SIDE */}
         <FlexBetween gap="1.5rem">
+          {/* LIGHT SWITCH */}
           <IconButton onClick={() => dispatch(setMode())}>
             {theme.palette.mode === "dark" ? (
               <DarkModeOutlined sx={{ fontSize: "25px" }} />
@@ -69,6 +73,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               <LightModeOutlined sx={{ fontSize: "25px" }} />
             )}
           </IconButton>
+          {/* SETTINGS */}
           <IconButton>
             <SettingsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
@@ -118,7 +123,11 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               onClose={handleClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             >
-              <MenuItem onClick={handleClose}>Log Out</MenuItem>
+              <MenuItem onClick={async() => {
+                handleClose();
+                await axios.post(process.env.REACT_APP_BASE_URL + '/api/users/logout');
+                navigate('/login');
+              }}>Log Out</MenuItem>
             </Menu>
           </FlexBetween>
         </FlexBetween>

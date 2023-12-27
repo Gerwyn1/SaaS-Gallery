@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from 'react';
 import FlexBetween from "components/FlexBetween";
 import Header from "components/Header";
 import {
@@ -20,11 +20,18 @@ import BreakdownChart from "components/BreakdownChart";
 import OverviewChart from "components/OverviewChart";
 import { useGetDashboardQuery } from "state/api";
 import StatBox from "components/StatBox";
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
   const { data, isLoading } = useGetDashboardQuery();
+
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if (!isAuthenticated) navigate('/login');
+  }, [navigate])
 
   const columns = [
     {
