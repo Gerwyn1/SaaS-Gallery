@@ -18,6 +18,7 @@ import Admin from "scenes/admin";
 import Performance from "scenes/performance";
 import Login  from './pages/Login';
 import Register from "pages/Register";
+import Profile from "scenes/profile";
 
 function App() {
   const mode = useSelector((state) => state.global.mode);
@@ -32,6 +33,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/products" element={<Products />} />
               <Route path="/customers" element={<Customers />} />
               <Route path="/transactions" element={<Transactions />} />

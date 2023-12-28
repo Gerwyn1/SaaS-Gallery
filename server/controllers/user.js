@@ -43,14 +43,66 @@ const getUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 });
 
+// UPDATE USER PROFILE
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const {
+    first_name,
+    last_name,
+    password,
+    roles,
+    email,
+    country,
+    state,
+    occupation,
+    phoneNumber,
+    postcode,
+    is_verified,
+    mobile_no,
+    address_1,
+    address_2,
+    company_name,
+    profile_image,
+    banner_image,
+  } = req.body;
+
+  const user = await UserModel.findById(req.user._id);
+
+  if (user) {
+    user.first_name = first_name || user.first_name;
+    user.last_name = last_name || user.last_name;
+    user.password = password || user.password;
+    user.roles = [roles] || user.roles;
+    user.email = email || user.email;
+    user.country = country || user.country;
+    user.state = state || user.state;
+    user.occupation = occupation || user.occupation;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.postcode = postcode || user.postcode;
+    user.is_verified = is_verified || user.is_verified;
+    user.mobile_no = mobile_no || user.mobile_no;
+    user.address_1 = address_1 || user.address_1;
+    user.address_2 = address_2 || user.address_2;
+    user.company_name = company_name || user.company_name;
+    user.profile_image = profile_image || user.profile_image;
+    user.banner_image = banner_image || user.banner_image;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json(updatedUser);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
 export {
   registerUser,
   authUser,
   logoutUser,
   getUserProfile,
+  updateUserProfile,
   // getAllUsers,
   // deleteUser,
-  // updateUserProfile,
   // disableUser,
   // requestEmailVerificationCode,
   // verifyEmail,

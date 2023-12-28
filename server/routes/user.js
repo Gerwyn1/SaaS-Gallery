@@ -6,7 +6,7 @@ import { requireAuth } from "../middleware/authMiddleware.js";
 // import {ROLES_LIST} from "../config/roles_list.js";
 // import {checkUserRole} from "../middleware/authMiddleware.js";
 // import { requestVerificationCodeRateLimit } from "../middleware/rateLimitMiddleware.js";
-// import {imageUpload} from "../middleware/mediaMiddleware.js";
+import {imageUpload} from "../middleware/mediaMiddleware.js";
 
 const router = express.Router();
 
@@ -22,12 +22,10 @@ router.post('/logout', requireAuth, UserController.logoutUser);
 // get user profile & update user profile
 router
 .route('/profile/:userId')
-.get(requireAuth, UserController.getUserProfile);
-// .patch(protect, checkUserRole(ROLES_LIST.editor, ROLES_LIST.admin, ROLES_LIST.user), imageUpload.fields([
-//   { name: 'profile_image', maxCount: 1 },
-//   { name: 'banner_image', maxCount: 1 },
-// ]), UserController.updateUserProfile);
-
+.get(UserController.getUserProfile).patch(imageUpload.fields([
+  { name: 'profile_image', maxCount: 1 },
+  { name: 'banner_image', maxCount: 1 },
+]), UserController.updateUserProfile);
 
 export default router;
 

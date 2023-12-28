@@ -132,6 +132,14 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               <MenuItem
                 onClick={async () => {
                   handleClose();
+                 navigate('/profile');
+                }}
+              >
+                My profile
+              </MenuItem>
+              <MenuItem
+                onClick={async () => {
+                  handleClose();
                   try {
                     await axios.post(
                       process.env.REACT_APP_BASE_URL + "/api/users/logout"

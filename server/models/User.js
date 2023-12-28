@@ -7,20 +7,16 @@ const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      // required: [true, 'Username is required.'],
-      // unique: true
+      unique: true
     },
     first_name: {
       type: String,
-      // required: true
     },
     last_name: {
       type: String,
-      // required: true
     },
     name: {
       type: String,
-      // required: true,
       min: 2,
       max: 100,
     },
@@ -34,27 +30,17 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Password is required.'],
     },
-    repeatPassword: {
-      type: String,
-      // required: [true, 'Repeat password is required.'],
-    },
     city: String,
     state: String,
     country: String,
     occupation: String,
     phoneNumber: String,
     transactions: Array,
-    role: {
-      type: String,
-      enum: ["user", "admin", "superadmin"],
-      default: "admin",
+    roles: {
+      type: [String],
+      default: ['user'],
+      enum: ['user', 'admin', 'superadmin'],
     },
-    // roles: {
-    //   type: [String],
-    //   default: ['user'],
-    //   enum: ['user', 'admin', 'superadmin']
-    //   default: 'admin'
-    // },
     postcode: {
       type: String,
       minLength: 6,
@@ -71,7 +57,6 @@ const UserSchema = new mongoose.Schema(
     passwordExpiresAt: {
       type: Date,
       default: new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000), // 3 months ahead
-      // required: true
     },
     setting: {
       type: mongoose.Schema.Types.ObjectId,
@@ -89,11 +74,11 @@ const UserSchema = new mongoose.Schema(
     country: String,
     profile_image: {
       type: String,
-      // required: [true, 'Profile image is required.'],
+      default: null
     },
     banner_image: {
       type: String,
-      // required: [true, 'Banner image is required.'],
+      default: null
     }
   },
   { timestamps: true }
