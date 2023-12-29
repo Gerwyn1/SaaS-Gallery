@@ -2,10 +2,10 @@ import express from "express";
 const router = express.Router();
 import * as feedbackController from '../controllers/feedback.js';
 import {rateLimiter} from '../middleware/rateLimiter.js';
-import feedbackValidation from '../validation/feedback.js'
+import {validate} from '../validation/feedback.js'
 
 router
   .route("/")
-  .post(rateLimiter, feedbackValidation, feedbackController.feedback);
+  .post(rateLimiter, validate, feedbackController.feedback);
 
-module.exports = router;
+export default router;

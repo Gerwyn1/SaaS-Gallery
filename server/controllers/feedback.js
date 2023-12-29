@@ -13,7 +13,10 @@ export const feedback = async (req, res) => {
   // NodeMailer proccessing ...
 
   let transporter = nodemailer.createTransport({
+    host: "smtp-relay.brevo.com",
+    port: 587,
     service: "gmail",
+    secure: true,
     auth: {
       user: process.env.EMAIL,
       pass: process.env.PASS,

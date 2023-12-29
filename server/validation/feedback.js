@@ -1,6 +1,6 @@
 import {body} from 'express-validator';
 
-const validate = [
+export const validate = [
   body("name").notEmpty().withMessage("You must enter a valid Name").trim(),
   body("email")
     .notEmpty()

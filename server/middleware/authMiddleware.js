@@ -10,34 +10,34 @@ const requireAuth = asyncHandler(async (req, res, next) => {
   next();
  });
 
-// const checkUserRole = (...allowedRoles) => {
-//   return asyncHandler(async (req, res, next) => {
-//     try {
-//       const user = await UserModel.findById(req.user.id);
+const checkUserRole = (...allowedRoles) => {
+  return asyncHandler(async (req, res, next) => {
+    try {
+      const user = await UserModel.findById(req.params.userId);
 
-//       if (!user) {
-//         throw new Error('Not authorized, please log in');
-//       }
+      if (!user) {
+        throw new Error('Not authorized, please log in');
+      }
       
-//        if (!user?.roles) {
-//           throw new Error('Not authorized, no roles found');
-//         }
+       if (!user?.roles) {
+          throw new Error('Not authorized, no roles found');
+        }
 
-//       // Check if the user has one of the allowed roles
-//       const rolesArray = [...allowedRoles];
-//       const result = user.roles.map(role => rolesArray.includes(role)).find(val => val === true);
-//       if (!result) {
-//         throw new Error('Not authorized, user does not have required role');
-//       }
+      // Check if the user has one of the allowed roles
+      const rolesArray = [...allowedRoles];
+      const result = user.roles.map(role => rolesArray.includes(role)).find(val => val === true);
+      if (!result) {
+        throw new Error('Not authorized, user does not have required role');
+      }
 
-//       // If user has allowed role, continue to next middleware
-//       next();
-//     } catch (error) {
-//         res.status(401);
-//         next(error);
-//     }
-//   });
-// };
+      // If user has allowed role, continue to next middleware
+      next();
+    } catch (error) {
+        res.status(401);
+        next(error);
+    }
+  });
+};
 
 // const checkIfPasswordExpired = (req, res, next) => { 
 //   if (req.user.passwordExpiresAt <= Date.now()) {

@@ -46,6 +46,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // UPDATE USER PROFILE
 const updateUserProfile = asyncHandler(async (req, res) => {
   const {
+    username,
     first_name,
     last_name,
     password,
@@ -65,13 +66,13 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     banner_image,
   } = req.body;
 
-  const user = await UserModel.findById(req.user._id);
-
+  const user = await UserModel.findById(req.params.userId);
   if (user) {
+    user.username = username || user.username;
     user.first_name = first_name || user.first_name;
     user.last_name = last_name || user.last_name;
     user.password = password || user.password;
-    user.roles = [roles] || user.roles;
+    user.roles = roles || user.roles;
     user.email = email || user.email;
     user.country = country || user.country;
     user.state = state || user.state;
@@ -85,9 +86,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.company_name = company_name || user.company_name;
     user.profile_image = profile_image || user.profile_image;
     user.banner_image = banner_image || user.banner_image;
-
     const updatedUser = await user.save();
-
     res.status(200).json(updatedUser);
   } else {
     res.status(404);

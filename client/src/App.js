@@ -19,6 +19,7 @@ import Performance from "scenes/performance";
 import Login  from './pages/Login';
 import Register from "pages/Register";
 import Profile from "scenes/profile";
+import FeedbackForm from './pages/FeedbackForm/FeedbackForm.jsx'
 
 function App() {
   const mode = useSelector((state) => state.global.mode);
@@ -45,6 +46,7 @@ function App() {
               <Route path="/admin" element={<Admin />} />
               <Route path="/performance" element={<Performance />} />
             </Route>
+              <Route path="/feedback" element={<FeedbackForm />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
           </Routes>

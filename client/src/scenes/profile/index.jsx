@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   Button,
@@ -16,32 +18,24 @@ import {
 
 import {
   setFormData,
-  resetForm,
   setLoginErrMsg,
   setInitialFormState,
   setProfileImage,
   setBannerImage,
 } from "../../state/index";
 import { useGetUserProfileQuery } from "state/api";
-/////
+
 const Profile = () => {
   const dispatch = useDispatch();
-  const { id, formData } = useSelector((state) => state.global);
+  const { formData } = useSelector((state) => state.global);
   const userId = Cookies.get("userId");
   const { data } = useGetUserProfileQuery(userId);
-console.log('first')
 
-  // useEffect(() => {
-  //     dispatch(setInitialFormState(data));
-  // }, []);
-//
   useEffect(() => {
     if (data) {
       dispatch(setInitialFormState(data));
     }
   }, [data, dispatch]);
-///qweqwe/
-//qwe
   const {
     formData: {
       username,
@@ -66,12 +60,18 @@ console.log('first')
   } = useSelector((state) => state.global);
   const handleChange = (field) => (e) =>
     dispatch(setFormData({ field, value: e.target.value }));
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (e.nativeEvent.submitter.name === "submitButton") {
+      if (password !== confirmPassword) {
+        toast.error("Passwords must match!");
+        throw new Error("Passwords must match!");
+      }
+
       try {
         const response = await axios.patch(
-          process.env.REACT_APP_BASE_URL + `/api/users/profile/${id}`,
+          process.env.REACT_APP_BASE_URL + `/api/users/profile/${formData._id}`,
           {
             username,
             first_name,
@@ -93,24 +93,16 @@ console.log('first')
           }
         );
 
-        dispatch(setFormData({...response.data}))
-        console.log('updated form data: ', formData)
-        // if (response.statusText === "OK") {
-        //   localStorage.setItem("isAuthenticated", true);
-        //   navigate("/dashboard");
-        //   document.cookie = `userId=${response.data.userId}; path=/`;
-
-        //   dispatch(setId(response.data.userId));
-        //   dispatch(setLoginErrMsg(""));
-        // }
-        // dispatch(resetForm());
+        if (response.statusText === "OK") {
+          dispatch(setFormData({ ...response.data }));
+          toast.success("Profile updated!");
+        }
       } catch (error) {
+        toast.error(error.message);
         dispatch(setLoginErrMsg(error.response.data.message));
       }
     }
   };
-  /////
-  console.log('updated form data: ', formData)
 
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedBanner, setSelectedBanner] = useState(null);
@@ -137,6 +129,7 @@ console.log('first')
       }}
       component="main"
     >
+      <ToastContainer />
       <Stack direction="row" gap={5}>
         <Stack spacing={4}>
           <Stack spacing={2} alignItems="center">
@@ -198,7 +191,7 @@ console.log('first')
           <form onSubmit={handleSubmit}>
             <Box display="flex" flexDirection="column">
               <Box display="flex" flexDirection="row" gap={2}>
-              <TextField
+                <TextField
                   value={username}
                   onChange={handleChange("username")}
                   label="Username"
