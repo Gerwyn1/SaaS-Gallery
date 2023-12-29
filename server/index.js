@@ -16,6 +16,7 @@ import generalRoutes from "./routes/general.js";
 import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 import userRoutes from './routes/user.js';
+import feedbackRoutes from './routes/feedback.js'
 
 // data imports
 import UserModel from "./models/User.js";
@@ -33,6 +34,7 @@ import {
   dataAffiliateStat,
 } from "./data/index.js";
 import {notFound, errorHandler} from './middleware/errorMiddleware.js';
+import {corsConfigs} from './config/corsConfigs.js'
 
 /* CONFIGURATION */
 dotenv.config();
@@ -84,6 +86,7 @@ app.use("/general", generalRoutes);
 app.use("/management", managementRoutes);
 app.use("/sales", salesRoutes);
 app.use('/api/users', userRoutes);
+app.use("/feedback", feedbackRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

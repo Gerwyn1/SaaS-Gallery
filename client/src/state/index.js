@@ -49,11 +49,16 @@ export const globalSlice = createSlice({
     },
     
     setInitialFormState: (state, action) => {
-      state.formData = {...action.payload};
-      state.formData.password = '';
+      // state.formData = {...action.payload};
+      // state.formData.password = '';
+      // state.formData.confirmPassword = '';
+      state.formData = {
+        ...action.payload,
+        password: '',
+        confirmPassword: '',
+      };
     },
     setFormData: (state, action) => {
-      console.log(action)
       const { field, value } = action.payload;
       state.formData[field] = value;
     },

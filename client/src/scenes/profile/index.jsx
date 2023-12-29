@@ -23,21 +23,28 @@ import {
   setBannerImage,
 } from "../../state/index";
 import { useGetUserProfileQuery } from "state/api";
-
+/////
 const Profile = () => {
   const dispatch = useDispatch();
   const { id, formData } = useSelector((state) => state.global);
   const userId = Cookies.get("userId");
   const { data } = useGetUserProfileQuery(userId);
+console.log('first')
 
+  // useEffect(() => {
+  //     dispatch(setInitialFormState(data));
+  // }, []);
+//
   useEffect(() => {
     if (data) {
       dispatch(setInitialFormState(data));
     }
   }, [data, dispatch]);
-
+///qweqwe/
+//qwe
   const {
     formData: {
+      username,
       first_name,
       last_name,
       password,
@@ -63,9 +70,10 @@ const Profile = () => {
     e.preventDefault();
     if (e.nativeEvent.submitter.name === "submitButton") {
       try {
-        const response = await axios.post(
+        const response = await axios.patch(
           process.env.REACT_APP_BASE_URL + `/api/users/profile/${id}`,
           {
+            username,
             first_name,
             last_name,
             password,
@@ -85,6 +93,8 @@ const Profile = () => {
           }
         );
 
+        dispatch(setFormData({...response.data}))
+        console.log('updated form data: ', formData)
         // if (response.statusText === "OK") {
         //   localStorage.setItem("isAuthenticated", true);
         //   navigate("/dashboard");
@@ -99,6 +109,8 @@ const Profile = () => {
       }
     }
   };
+  /////
+  console.log('updated form data: ', formData)
 
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedBanner, setSelectedBanner] = useState(null);
@@ -187,7 +199,7 @@ const Profile = () => {
             <Box display="flex" flexDirection="column">
               <Box display="flex" flexDirection="row" gap={2}>
               <TextField
-                  value={first_name}
+                  value={username}
                   onChange={handleChange("username")}
                   label="Username"
                   margin="normal"
