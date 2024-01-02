@@ -5,7 +5,6 @@ import nodemailer from 'nodemailer';
 // @Route POST /feedback
 // @Access Public
 export const feedback = async (req, res) => {
-  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
@@ -14,14 +13,16 @@ export const feedback = async (req, res) => {
 
   let transporter = nodemailer.createTransport({
     host: "smtp-relay.brevo.com",
-    port: 587,
+    port: 465,
     service: "gmail",
-    secure: true,
+    secure: false,
     auth: {
       user: process.env.EMAIL,
       pass: process.env.PASS,
     },
   });
+
+  const formattedText = req.body.text.replace(/\n/g, '</p><p>');
   let mailOptions = {
     from: req.body.email,
     to: process.env.EMAIL,
@@ -30,7 +31,7 @@ export const feedback = async (req, res) => {
     `<div>
     <p>From: ${req.body.email}</p>
     <p>Subject: ${req.body.subject}</p>
-    <p>${req.body.text}</p>
+    <p>${formattedText}</p>
     </div>`,
   };
   transporter.sendMail(mailOptions, function (error, info) {
